@@ -1,0 +1,9 @@
+[submodule "circom/circomlib"]
+	path = circom/circomlib
+	url = https://github.com/iden3/circomlib.git
+[submodule "circom/plonk/plonkit"]
+	path = circom/plonk/plonkit
+	url = https://github.com/fluidex/plonkit.git
+[submodule "circom/groth16/rapidsnark"]
+	path = circom/groth16/rapidsnark
+	url = https://github.com/iden3/rapidsnark.git
