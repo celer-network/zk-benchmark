@@ -6,23 +6,23 @@ Benchmark of multiple zk implementations.
 
 #### Current plan
 Define a single circuit that compute sha256 for N bytes data
-- one private input: _In_, len(_In_) = N = 2^k
-- one public input: _Out_ = sha256(_In_)
+- one private input: _x_, len(_x_) = _N_ = 2^k
+- one public input: _h_ = sha256(_x_)
 
 ```
-func benchmark(In, Out):
-    assert(sha256(In) == Out)
+func benchmark(x, h):
+    assert(sha256(x) == h)
 ```
 
 #### Deprecated plan
 Define a single circuit that compute sha256 for N times
-- one private input: _In_
-- one public input: _Out_ = sha256(_In_)
+- one private input: _x_
+- one public input: _h_ = sha256(_x_)
 
 ```
-func benchmark(In, Out, N):
+func benchmark(x, h, N):
     for i = 0; i < N; i++ {
-        h = sha256(In);
-        assert(h == Out);
+        h = sha256(x);
+        assert(h == h);
     }
 ```
