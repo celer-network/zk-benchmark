@@ -8,9 +8,9 @@ Define a single circuit that compute sha256 for N times
 - one public input: _Out_ = sha256(_In_)
 
 ```
-func benchmark(_In_, _Out_, _N_):
+func benchmark(In, Out, N):
     for i = 0; i < N; i++ {
-        h = sha256(_In_);
-        assert(h == _Out_);
+        h = sha256(In);
+        assert(h == Out);
     }
 ```
