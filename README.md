@@ -22,7 +22,6 @@ Define a single circuit that compute sha256 for N times
 ```
 func benchmark(x, h, N):
     for i = 0; i < N; i++ {
-        h = sha256(x);
-        assert(h == h);
+        assert(sha256(x) == h);
     }
 ```
