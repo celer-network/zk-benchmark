@@ -1,0 +1,4 @@
+
+echo ""
+zokrates verify
+echo ""

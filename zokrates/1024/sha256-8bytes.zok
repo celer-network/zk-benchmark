@@ -1,0 +1,10 @@
+import "hashes/sha256/sha256Padded";
+
+const u32 n = 1024; // change with input
+const u32 size = 64*n;
+
+def main(u8[size] input, u32[8] expected_hash) {
+    u32[8] hash = sha256Padded(input);
+    assert(hash == expected_hash);
+    return;
+}
