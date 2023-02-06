@@ -1,6 +1,6 @@
 #!/bin/bash  
 
-for i in $(seq 0 1)
+for i in $(seq 0 10)
 do
 n=$[2 ** $i]
 cd zok/$n
