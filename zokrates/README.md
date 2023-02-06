@@ -1,5 +1,9 @@
-run benchmark:
+### how to run benchmark
+`sh benchmark.sh`:
 
-``
-sh benchmark.sh > log/$(date "+%Y-%m-%d-%H:%M:%S").log 2>&1
-``
+### what are these folders about
+zok folder: N 64-bytes hash scripts and data are in the folders corresponding to their numbers
+
+log folder: benchmark log is in the folder named log
+
+scripts folder: shell scripts for benchmark
