@@ -1,9 +1,13 @@
 [submodule "circom/circomlib"]
-	path = circom/circomlib
-	url = https://github.com/iden3/circomlib.git
+path = circom/circomlib
+url = https://github.com/iden3/circomlib.git
 [submodule "circom/plonk/plonkit"]
-	path = circom/plonk/plonkit
-	url = https://github.com/fluidex/plonkit.git
+path = circom/plonk/plonkit
+url = https://github.com/fluidex/plonkit.git
 [submodule "circom/groth16/rapidsnark"]
-	path = circom/groth16/rapidsnark
-	url = https://github.com/iden3/rapidsnark.git
+path = circom/groth16/rapidsnark
+url = https://github.com/iden3/rapidsnark.git
+[submodule "plonky2-bench"]
+path = starky
+url = https://github.com/celer-network/plonky2-bench.git
+branch = merkle-stark
