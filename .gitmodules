@@ -13,4 +13,4 @@ url = https://github.com/celer-network/plonky2-bench.git
 branch = merkle-stark
 [submodule "plonky2"]
 path = plonky2
-url  = https://github.com/AndrewLeeCHCH/plonky2-sha256.git
+url  = https://github.com/celer-network/plonky2-sha256.git
