@@ -41,5 +41,5 @@ template Main(N) {
 }
 
 // render this file before compilation
-component main = Main(INPUT_SIZE);
+component main = Main(64);
 
