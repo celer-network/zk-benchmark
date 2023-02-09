@@ -16,6 +16,10 @@ TAU_RANK=$2
 TAU_DIR=${SCRIPT_DIR}"/../setup/tau"
 TAU_FILE="${TAU_DIR}/powersOfTau28_hez_final_${TAU_RANK}.ptau"
 
+function renderCircom() {
+  sed -i "s/INPUT_SIZE/$INPUT_SIZE" "$CIRCUIT_DIR"/sha256_test.circom
+}
+
 function compile() {
   pushd "$CIRCUIT_DIR"
   circom sha256_test.circom --r1cs --sym --c
@@ -24,13 +28,10 @@ function compile() {
   popd
 }
 
-function downloadTauFile() {
+function setup() {
   if [ ! -f "$TAU_FILE" ]; then
     wget -P "$TAU_DIR" https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_${TAU_RANK}.ptau
   fi
-}
-
-function setup() {
   "${TIME[@]}" "$SCRIPT_DIR"/trusted_setup.sh "$TAU_RANK"
 # snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey
 # echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name='Celer' -v
@@ -39,7 +40,6 @@ function setup() {
   verify_key_size=$(du -h verification_key.json | cut -f1)
   echo "Prove key size: $prove_key_size"
   echo "Verify key size: $verify_key_size"
-  popd
 }
 
 function generateWtns() {
@@ -71,8 +71,8 @@ function verify() {
   popd
 }
 
-echo "========== Step0: download tau file  =========="
-downloadTauFile
+echo "========== Step0: render circom  =========="
+renderCircom
 
 echo "========== Step1: compile circom  =========="
 compile
