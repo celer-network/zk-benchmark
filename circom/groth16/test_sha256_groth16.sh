@@ -9,7 +9,8 @@ set -e
 SCRIPT=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
 CIRCUIT_DIR=${SCRIPT_DIR}"/../circuits/sha256_test"
-TIME="/usr/bin/time -f \"mem: %M time: %E\" "
+TIME='/usr/bin/time -f "mem: %M time: %E" '
+TIME=(/usr/bin/time -f "mem: %M time: %E")
 RAPID_SNARK_PROVER=${SCRIPT_DIR}"/rapidsnark/build/prover"
 INPUT_SIZE=$1
 TAU_RANK=$2
@@ -19,7 +20,8 @@ TAU_FILE="${TAU_DIR}/powersOfTau28_hez_final_${TAU_RANK}.ptau"
 function compile() {
   pushd "$CIRCUIT_DIR"
   circom sha256_test.circom --r1cs --sym --c
-  cd sha256_test_cpp | make
+  cd sha256_test_cpp
+  make
   popd
 }
 
@@ -31,8 +33,8 @@ function downloadTauFile() {
 
 function setup() {
   pushd "$CIRCUIT_DIR"
-  snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey
-  echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name="1st Contributor Name" -v
+  "${TIME[@]}" snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey &&
+  echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name="1st Contributor Name" -v &&
   snarkjs zkey export verificationkey sha256_test_0001.zkey verification_key.json
   prove_key_size=$(du -h sha256_test_0001.zkey | cut -f1)
   verify_key_size=$(du -h verification_key.json | cut -f1)
@@ -43,14 +45,14 @@ function setup() {
 
 function generateWtns() {
   pushd "$CIRCUIT_DIR"
-  sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns
-  #$TIME node sha256_test_js/generate_witness.js sha256_test_js/sha256_test.wasm input_${INPUT_SIZE}.json witness.wtns
+  "${TIME[@]}" sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns
+  #"${TIME[@]}" node sha256_test_js/generate_witness.js sha256_test_js/sha256_test.wasm input_${INPUT_SIZE}.json witness.wtns
   popd
 }
 
 function normalProve() {
   pushd "$CIRCUIT_DIR"
-  snarkjs groth16 prove sha256_test_0001.zkey witness.wtns proof.json public.json
+  "${TIME[@]}" snarkjs groth16 prove sha256_test_0001.zkey witness.wtns proof.json public.json
   proof_size=$(du -h proof.json | cut -f1)
   echo "Proof size: $proof_size"
   popd
@@ -58,7 +60,7 @@ function normalProve() {
 
 function rapidProve() {
   pushd "$CIRCUIT_DIR"
-  $RAPID_SNARK_PROVER sha256_test_0001.zkey witness.wtns proof.json public.json
+  "${TIME[@]}" "$RAPID_SNARK_PROVER" sha256_test_0001.zkey witness.wtns proof.json public.json
   proof_size=$(du -h proof.json | cut -f1)
   echo "Proof size: $proof_size"
   popd
@@ -66,7 +68,7 @@ function rapidProve() {
 
 function verify() {
   pushd "$CIRCUIT_DIR"
-  snarkjs groth16 verify verification_key.json public.json proof.json
+  "${TIME[@]}" snarkjs groth16 verify verification_key.json public.json proof.json
   popd
 }
 
@@ -79,22 +81,22 @@ function main() {
   compile
 
   echo "========== Step2: setup =========="
-  $TIME setup
+  setup
 
   echo "========== Step3: generate witness  =========="
-  $TIME generateWtns
+  generateWtns
 
   echo "========== Step4: prove  =========="
-  $TIME normalProve
+  normalProve
 
   echo "========== Step5: verify  =========="
-  $TIME verify
+  verify
 
   echo "========== Step6: rapid prove  =========="
-  $TIME rapidProve
+  rapidProve
 
   echo "========== Step5: verify  =========="
-  $TIME verify
+  verify
 }
 
 main
