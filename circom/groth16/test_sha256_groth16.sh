@@ -17,7 +17,7 @@ TAU_DIR=${SCRIPT_DIR}"/../setup/tau"
 TAU_FILE="${TAU_DIR}/powersOfTau28_hez_final_${TAU_RANK}.ptau"
 
 function renderCircom() {
-  sed -i "s/INPUT_SIZE/$INPUT_SIZE" "$CIRCUIT_DIR"/sha256_test.circom
+  sed -i "s/INPUT_SIZE/$INPUT_SIZE/" "$CIRCUIT_DIR"/sha256_test.circom
 }
 
 function compile() {
