@@ -9,7 +9,6 @@ set -e
 SCRIPT=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
 CIRCUIT_DIR=${SCRIPT_DIR}"/../circuits/sha256_test"
-TIME='/usr/bin/time -f "mem: %M time: %E" '
 TIME=(/usr/bin/time -f "mem: %M time: %E")
 RAPID_SNARK_PROVER=${SCRIPT_DIR}"/rapidsnark/build/prover"
 INPUT_SIZE=$1
@@ -33,9 +32,9 @@ function downloadTauFile() {
 
 function setup() {
   pushd "$CIRCUIT_DIR"
-  "${TIME[@]}" snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey &&
-  echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name="1st Contributor Name" -v &&
-  snarkjs zkey export verificationkey sha256_test_0001.zkey verification_key.json
+  "${TIME[@]}" snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey
+  "${TIME[@]}" echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name='Celer' -v
+  "${TIME[@]}" snarkjs zkey export verificationkey sha256_test_0001.zkey verification_key.json
   prove_key_size=$(du -h sha256_test_0001.zkey | cut -f1)
   verify_key_size=$(du -h verification_key.json | cut -f1)
   echo "Prove key size: $prove_key_size"
@@ -72,31 +71,26 @@ function verify() {
   popd
 }
 
+echo "========== Step0: download tau file  =========="
+downloadTauFile
 
-function main() {
-  echo "========== Step0: download tau file  =========="
-  downloadTauFile
+echo "========== Step1: compile circom  =========="
+compile
 
-  echo "========== Step1: compile circom  =========="
-  compile
+echo "========== Step2: setup =========="
+setup
 
-  echo "========== Step2: setup =========="
-  setup
+echo "========== Step3: generate witness  =========="
+generateWtns
 
-  echo "========== Step3: generate witness  =========="
-  generateWtns
+echo "========== Step4: prove  =========="
+normalProve
 
-  echo "========== Step4: prove  =========="
-  normalProve
+echo "========== Step5: verify  =========="
+verify
 
-  echo "========== Step5: verify  =========="
-  verify
+echo "========== Step6: rapid prove  =========="
+rapidProve
 
-  echo "========== Step6: rapid prove  =========="
-  rapidProve
-
-  echo "========== Step5: verify  =========="
-  verify
-}
-
-main
+echo "========== Step5: verify  =========="
+verify
