@@ -7,9 +7,10 @@ SETUP_DIR=$REPO_DIR"/setup/key"
 KEY_RANK=22
 SETUP_MK=${SETUP_DIR}/setup_2^${KEY_RANK}.key
 SETUP_LK=${SETUP_DIR}/setup_2^${KEY_RANK}_lagrange.key
-DOWNLOAD_SETUP_FROM_REMOTE=false
+DOWNLOAD_SETUP_FROM_REMOTE=true
 PLONKIT_BIN=$DIR"/plonkit/target/release/plonkit"
 DUMP_LAGRANGE_KEY=false
+INPUT_SIZE=64
 
 echo "Step0: check for necessary dependencies: node,npm,axel"
 PKG_PATH=""
@@ -51,7 +52,7 @@ echo "Step3: compile circuit and calculate witness"
 circom $CIRCUIT_DIR/sha256_test.circom --r1cs --sym -c
 pushd $CIRCUIT_DIR/sha256_test_cpp
 make
-./sha256_test ../input.json ../witness.wtns
+./sha256_test ../input_${INPUT_SIZE}.json ../witness.wtns
 popd
 
 echo "Step4: export verification key"
