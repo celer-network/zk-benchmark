@@ -9,7 +9,7 @@ set -e
 SCRIPT=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
 CIRCUIT_DIR=${SCRIPT_DIR}"/../circuits/sha256_test"
-TIME=(/usr/bin/time -f "mem: %M time: %E")
+TIME=(/usr/bin/time -f "mem %M\ntime %e\ncpu %P")
 RAPID_SNARK_PROVER=${SCRIPT_DIR}"/rapidsnark/build/prover"
 INPUT_SIZE=$1
 TAU_RANK=$2
@@ -51,9 +51,30 @@ function generateWtns() {
   popd
 }
 
+avg_time() {
+    #
+    # usage: avg_time n command ...
+    #
+    n=10; shift
+    (($# > 0)) || return                   # bail if no command given
+    for ((i = 0; i < n; i++)); do
+        { "${TIME[@]}" "$@" &>/dev/null; } 2>&1 # ignore the output of the command
+                                           # but collect time's output in stdout
+    done | awk '
+        /mem/ { mem = mem + $2; nm++ }
+        /time/ { time = time + $2; nt++ }
+        /cpu/  { cpu  = cpu  + $2; nc++}
+        END    {
+                 if (nm>0) printf("mem %f\n", mem/nm);
+                 if (nt>0) printf("time %f\n", time/nt);
+                 if (nc>0) printf("cpu %f\n",  cpu/nc)
+               }'
+}
+
 function normalProve() {
   pushd "$CIRCUIT_DIR"
-  "${TIME[@]}" snarkjs groth16 prove sha256_test_0001.zkey witness.wtns proof.json public.json
+  avg_time 10 snarkjs groth16 prove sha256_test_0001.zkey witness.wtns proof.json public.json
+#  "${TIME[@]}" snarkjs groth16 prove sha256_test_0001.zkey witness.wtns proof.json public.json
   proof_size=$(du -h proof.json | cut -f1)
   echo "Proof size: $proof_size"
   popd
