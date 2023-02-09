@@ -27,7 +27,7 @@ template Main(N) {
 
     component sha256 = Sha256Bytes(N);
     sha256.in <== in;
-    out <== sha256[0].out;
+    out <== sha256.out;
 
     for (var i = 0; i < 32; i++) {
         out[i] === hash[i];
