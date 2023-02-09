@@ -31,10 +31,10 @@ function downloadTauFile() {
 }
 
 function setup() {
-  pushd "$CIRCUIT_DIR"
-  "${TIME[@]}" snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey
-  "${TIME[@]}" echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name='Celer' -v
-  "${TIME[@]}" snarkjs zkey export verificationkey sha256_test_0001.zkey verification_key.json
+  "${TIME[@]}" "$SCRIPT_DIR"/trusted_setup.sh "$TAU_RANK"
+# snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey
+# echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name='Celer' -v
+# snarkjs zkey export verificationkey sha256_test_0001.zkey verification_key.json
   prove_key_size=$(du -h sha256_test_0001.zkey | cut -f1)
   verify_key_size=$(du -h verification_key.json | cut -f1)
   echo "Prove key size: $prove_key_size"
