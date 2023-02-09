@@ -1,52 +1,100 @@
 #!/bin/bash
 
+if [ $# -ne 2 ]; then
+  echo "input_size and tau_rank required"
+  exit 1
+fi
 set -x
 set -e
-
+SCRIPT=$(realpath "$0")
+SCRIPT_DIR=$(dirname "$SCRIPT")
+CIRCUIT_DIR=${SCRIPT_DIR}"/../circuits/sha256_test"
 TIME="/usr/bin/time -f \"mem: %M time: %E\" "
-INPUT_SIZE=64
-TAU_RANK=21
-TAU_DIR="../../setup/tau"
+RAPID_SNARK_PROVER=${SCRIPT_DIR}"/rapidsnark/build/prover"
+INPUT_SIZE=$1
+TAU_RANK=$2
+TAU_DIR=${SCRIPT_DIR}"/../setup/tau"
 TAU_FILE="${TAU_DIR}/powersOfTau28_hez_final_${TAU_RANK}.ptau"
 
+function compile() {
+  pushd "$CIRCUIT_DIR"
+  circom sha256_test.circom --r1cs --sym --c
+  cd sha256_test_cpp | make
+  popd
+}
+
+function downloadTauFile() {
+  if [ ! -f "$TAU_FILE" ]; then
+    wget -P "$TAU_DIR" https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_${TAU_RANK}.ptau
+  fi
+}
+
+function setup() {
+  pushd "$CIRCUIT_DIR"
+  snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey
+  echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name="1st Contributor Name" -v
+  snarkjs zkey export verificationkey sha256_test_0001.zkey verification_key.json
+  prove_key_size=$(du -h sha256_test_0001.zkey | cut -f1)
+  verify_key_size=$(du -h verification_key.json | cut -f1)
+  echo "Prove key size: $prove_key_size"
+  echo "Verify key size: $verify_key_size"
+  popd
+}
+
+function generateWtns() {
+  pushd "$CIRCUIT_DIR"
+  sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns
+  #$TIME node sha256_test_js/generate_witness.js sha256_test_js/sha256_test.wasm input_${INPUT_SIZE}.json witness.wtns
+  popd
+}
+
+function normalProve() {
+  pushd "$CIRCUIT_DIR"
+  snarkjs groth16 prove sha256_test_0001.zkey witness.wtns proof.json public.json
+  proof_size=$(du -h proof.json | cut -f1)
+  echo "Proof size: $proof_size"
+  popd
+}
+
+function rapidProve() {
+  pushd "$CIRCUIT_DIR"
+  $RAPID_SNARK_PROVER sha256_test_0001.zkey witness.wtns proof.json public.json
+  proof_size=$(du -h proof.json | cut -f1)
+  echo "Proof size: $proof_size"
+  popd
+}
+
+function verify() {
+  pushd "$CIRCUIT_DIR"
+  snarkjs groth16 verify verification_key.json public.json proof.json
+  popd
+}
+
+
 function main() {
-    pushd ../circuits/sha256_test
+  echo "========== Step0: download tau file  =========="
+  downloadTauFile
 
-    echo "========== Step1: compile circom  =========="
-    $TIME circom sha256_test.circom --r1cs --sym --c
+  echo "========== Step1: compile circom  =========="
+  compile
 
-    echo "========== Step2: generate witness =========="
-    cd sha256_test_cpp
-    $TIME make
-    cd ..
-    $TIME sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns
-    #$TIME node sha256_test_js/generate_witness.js sha256_test_js/sha256_test.wasm input_${INPUT_SIZE}.json witness.wtns
+  echo "========== Step2: setup =========="
+  $TIME setup
 
-    echo "========== Step3: setup =========="
-    if [ ! -f $TAU_FILE ]; then
-        wget -P $TAU_DIR https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_${TAU_RANK}.ptau
-    fi
-    $TIME snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey
+  echo "========== Step3: generate witness  =========="
+  $TIME generateWtns
 
-    echo "========== Step4: contribute to the phase 2 of the ceremony =========="
-    $TIME echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name="1st Contributor Name" -v
+  echo "========== Step4: prove  =========="
+  $TIME normalProve
 
-    echo "========== Step5: export the verification key =========="
-    $TIME snarkjs zkey export verificationkey sha256_test_0001.zkey verification_key.json
+  echo "========== Step5: verify  =========="
+  $TIME verify
 
-    echo "========== Step6: groth16 prove =========="
-    $TIME snarkjs groth16 prove sha256_test_0001.zkey witness.wtns proof.json public.json
+  echo "========== Step6: rapid prove  =========="
+  $TIME rapidProve
 
-    echo "========== Step7: groth16 verify =========="
-    $TIME snarkjs groth16 verify verification_key.json public.json proof.json
-
-    echo "========== Step8: groth16 rapidsnark prove =========="
-    $TIME ../../groth16/rapidsnark/build/prover sha256_test_0001.zkey witness.wtns proof.json public.json
-
-    echo "========== Step9: groth16 verify =========="
-    $TIME snarkjs groth16 verify verification_key.json public.json proof.json
-
-    popd
+  echo "========== Step5: verify  =========="
+  $TIME verify
 }
 
 main
