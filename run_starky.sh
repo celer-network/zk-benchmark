@@ -1,4 +1,4 @@
-TIME = /usr/bin/time
+TIME=/usr/bin/time
 which $TIME
 pushd starky
 RUSTFLAGS=-Awarnings $TIME -f "peak mem %M" cargo +nightly run --release --example time_sha256_compression -- 1   # 1 SHAs = 2 Blocks
