@@ -20,28 +20,26 @@ pragma circom 2.0.3;
 
 include "../sha256/sha256_bytes.circom";
 
-template Main() {
-    var N = 8;
-    signal input in[N][64];
-    signal input start;
+template Main(N) {
+    signal input in[N];
+    signal input hash[32];
     signal output out[32];
 
-    component sha256[N];
+    component sha256 = Sha256Bytes(N);
+    sha256.in <== in;
+    out <== sha256.out;
 
-    for (var i=0; i<N; i++) {
-        sha256[i] = Sha256Bytes(64);
-        sha256[i].in <== in[i];
+    for (var i = 0; i < 32; i++) {
+        out[i] === hash[i];
     }
-    out <== sha256[0].out;
 
     log("start ================");
     for (var i = 0; i < 32; i++) {
         log(out[i]);
     }
     log("finish ================");
-
-    out[0] === start;
 }
 
-component main = Main();
+// render this file before compilation
+component main = Main(64);
 
