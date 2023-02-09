@@ -38,8 +38,8 @@ function setup() {
 # snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey
 # echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name='Celer' -v
 # snarkjs zkey export verificationkey sha256_test_0001.zkey verification_key.json
-  prove_key_size=$(du -h sha256_test_0001.zkey | cut -f1)
-  verify_key_size=$(du -h verification_key.json | cut -f1)
+  prove_key_size=$(du -h "$CIRCUIT_DIR"/sha256_test_0001.zkey | cut -f1)
+  verify_key_size=$(du -h "$CIRCUIT_DIR"/verification_key.json | cut -f1)
   echo "Prove key size: $prove_key_size"
   echo "Verify key size: $verify_key_size"
 }
