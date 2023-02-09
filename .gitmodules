@@ -14,3 +14,6 @@ branch = merkle-stark
 [submodule "plonky2"]
 path = plonky2
 url  = https://github.com/celer-network/plonky2-sha256.git
+[submodule "arkworks-sha256"]
+	path = arkworks-sha256-bench
+	url = https://github.com/celer-network/arkworks-sha256-bench.git
