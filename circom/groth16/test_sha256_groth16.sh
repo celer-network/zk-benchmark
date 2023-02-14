@@ -47,8 +47,8 @@ function setup() {
 # snarkjs groth16 setup sha256_test.r1cs ${TAU_FILE} sha256_test_0000.zkey
 # echo 1 | snarkjs zkey contribute sha256_test_0000.zkey sha256_test_0001.zkey --name='Celer' -v
 # snarkjs zkey export verificationkey sha256_test_0001.zkey verification_key.json
-  prove_key_size=$(du -h "$CIRCUIT_DIR"/sha256_test_0001.zkey | cut -f1)
-  verify_key_size=$(du -h "$CIRCUIT_DIR"/verification_key.json | cut -f1)
+  prove_key_size=$(ls -lh "$CIRCUIT_DIR"/sha256_test_0001.zkey | awk '{print $5}')
+  verify_key_size=$(ls -lh "$CIRCUIT_DIR"/verification_key.json | awk '{print $5}')
   echo "Prove key size: $prove_key_size"
   echo "Verify key size: $verify_key_size"
 }
@@ -85,7 +85,7 @@ function normalProve() {
   pushd "$CIRCUIT_DIR"
   avg_time 10 snarkjs groth16 prove sha256_test_0001.zkey witness.wtns proof.json public.json
 #  "${TIME[@]}" snarkjs groth16 prove sha256_test_0001.zkey witness.wtns proof.json public.json
-  proof_size=$(du -h proof.json | cut -f1)
+  proof_size=$(ls -lh proof.json | awk '{print $5}')
   echo "Proof size: $proof_size"
   popd
 }
@@ -94,7 +94,7 @@ function rapidProve() {
   pushd "$CIRCUIT_DIR"
   avg_time 10 "$RAPID_SNARK_PROVER" sha256_test_0001.zkey witness.wtns proof.json public.json
 #  "${TIME[@]}" "$RAPID_SNARK_PROVER" sha256_test_0001.zkey witness.wtns proof.json public.json
-  proof_size=$(du -h proof.json | cut -f1)
+  proof_size=$(ls -lh proof.json | awk '{print $5}')
   echo "Proof size: $proof_size"
   popd
 }
