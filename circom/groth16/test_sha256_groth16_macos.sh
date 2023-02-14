@@ -30,13 +30,14 @@ function renderCircom() {
 
 function compile() {
   pushd "$CIRCUIT_DIR"
-  echo circom sha256_test.circom --r1cs --sym --c
-  circom sha256_test.circom --r1cs --sym --c
-  cd sha256_test_cpp
-  echo gsed -i -e '71s/uint/int/' fr.hpp make sure gsed installed
-  gsed -i -e '71s/uint/int/' fr.hpp
-  echo gsed -i '56s/uint/int/' fr.cpp make sure gsed installed
-  gsed -i -e '56s/uint/int/' fr.cpp
+  echo circom sha256_test.circom --r1cs --sym --wasm
+  circom sha256_test.circom --r1cs --sym --wasm
+# witness generation by c++ is not supported on M1 arm64
+#  cd sha256_test_cpp
+#  echo gsed -i -e '71s/uint/int/' fr.hpp make sure gsed installed
+#  gsed -i -e '71s/uint/int/' fr.hpp
+#  echo gsed -i '56s/uint/int/' fr.cpp make sure gsed installed
+#  gsed -i -e '56s/uint/int/' fr.cpp
   make
   popd
 }
@@ -64,8 +65,9 @@ function setup() {
 function generateWtns() {
   pushd "$CIRCUIT_DIR"
   echo "${TIME[@]}" sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns
-  "${TIME[@]}" sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns
-  #"${TIME[@]}" node sha256_test_js/generate_witness.js sha256_test_js/sha256_test.wasm input_${INPUT_SIZE}.json witness.wtns
+# witness generation by c++ is not supported on M1 arm64
+#  "${TIME[@]}" sha256_test_cpp/sha256_test input_${INPUT_SIZE}.json witness.wtns
+  "${TIME[@]}" node sha256_test_js/generate_witness.js sha256_test_js/sha256_test.wasm input_${INPUT_SIZE}.json witness.wtns
   popd
 }
 
