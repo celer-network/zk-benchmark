@@ -2,7 +2,7 @@
 
 SCRIPT=$(realpath "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
-TEST_SCRIPT="test_sha256_groth16.sh"
+TEST_SCRIPT="test_sha256_groth16_macos.sh"
 
 "$SCRIPT_DIR"/"$TEST_SCRIPT" 65536 25
 
