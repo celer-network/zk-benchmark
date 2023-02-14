@@ -38,7 +38,7 @@ function compile() {
 #  gsed -i -e '71s/uint/int/' fr.hpp
 #  echo gsed -i '56s/uint/int/' fr.cpp make sure gsed installed
 #  gsed -i -e '56s/uint/int/' fr.cpp
-  make
+#  make
   popd
 }
 
