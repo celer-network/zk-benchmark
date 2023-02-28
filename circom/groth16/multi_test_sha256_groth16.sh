@@ -1,0 +1,47 @@
+#!/bin/bash
+
+SCRIPT=$(realpath "$0")
+SCRIPT_DIR=$(dirname "$SCRIPT")
+TEST_SCRIPT="test_sha256_groth16.sh"
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 65536 25
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 32768 24
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 16384 23
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 8192 22
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 4096 21
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 2048 20
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 1024 19
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 512 19
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 256 18
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 128 17
+
+sleep 1
+
+"$SCRIPT_DIR"/"$TEST_SCRIPT" 64 16

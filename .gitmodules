@@ -1,0 +1,21 @@
+[submodule "circom/circomlib"]
+path = circom/circomlib
+url = https://github.com/iden3/circomlib.git
+[submodule "circom/groth16/rapidsnark"]
+path = circom/groth16/rapidsnark
+url = https://github.com/iden3/rapidsnark.git
+[submodule "plonky2-bench"]
+path = starky
+url = https://github.com/celer-network/plonky2-bench.git
+[submodule "plonky2"]
+path = plonky2
+url = https://github.com/celer-network/plonky2-sha256.git
+[submodule "arkworks-sha256"]
+path = arkworks
+url = https://github.com/celer-network/arkworks-sha256-bench.git
+[submodule "halo2/IPA"]
+path = halo2/IPA
+url = https://github.com/celer-network/halo2
+[submodule "halo2/KZG"]
+path = halo2/KZG
+url = https://github.com/celer-network/halo2

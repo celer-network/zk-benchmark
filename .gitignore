@@ -1,0 +1,45 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+.idea
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
+
+# Build
+build
+
+# Dependency directories (remove the comment below to include it)
+# vendor/
+protoc.zip
+protoc/
+
+.vscode/
+.DS_Store
+circuits/bls/test_bls
+circuits/bls/lib/libblst.a
+circuits/zkwasm_cli*
+circuits/zkwasm-cli*
+*.wasm
+*.wat
+
+node_modules
+.env
+coverage
+coverage.json
+typechain
+typechain-types
+
+# Hardhat files
+cache
+artifacts
+
+.zkey
+.r1cs
+.sym
