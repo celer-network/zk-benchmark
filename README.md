@@ -1,6 +1,7 @@
 # zk-benchmark
 Benchmark of multiple zk implementations.
 
+The benchmark results can be found in [this blog](https://blog.celer.network/2023/03/01/the-patheon-of-zero-knowledge-proof-development-frameworks/).
 
 ### SHA256 benchmark
 
