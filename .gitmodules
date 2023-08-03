@@ -19,3 +19,6 @@ url = https://github.com/celer-network/halo2
 [submodule "halo2/KZG"]
 path = halo2/KZG
 url = https://github.com/celer-network/halo2
+[submodule "barretenberg/barretenberg"]
+	path = barretenberg/barretenberg
+	url = git@github.com:AztecProtocol/barretenberg.git
